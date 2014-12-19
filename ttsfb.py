@@ -95,6 +95,12 @@ mena = []
 citaj_meno = True
 whitelist = True
 
+class Settings:
+    jazyk = "sk"
+    mena = []
+    citaj_meno = True
+    whitelist = True
+
 class Loading:
     """Loading"""
     from time import sleep
@@ -151,10 +157,10 @@ def menu():
     cls()
     
     global jazyk, mena, citaj_meno
-    if len(mena) == 0:
+    if len(Settings.mena) == 0:
         i_mena = "všetci"
     else:
-        i_mena = len(mena)
+        i_mena = len(Settings.mena)
     
     print ("""Menu:
 1 -> Nastavenie jazyka (nastavený: {0})
@@ -164,7 +170,7 @@ def menu():
 0 -> Spustiť
 
 q -> exit()
-""".format(jazyk, i_mena, citaj_meno))
+""".format(Settings.jazyk, i_mena, Settings.citaj_meno))
     
     volba = input("Zdajte číslo: ")
     
@@ -184,13 +190,13 @@ q -> exit()
     if volba == 0:
         return
     if volba == 1:
-        jazyk = input("Zadajte kódové označenie jazyka (napr. sk, en, de): ")
+        Settings.jazyk = input("Zadajte kódové označenie jazyka (napr. sk, en, de): ")
         cls()
     elif volba == 2:
         cls()
         set_users()
     elif volba == 3:
-        citaj_meno = not citaj_meno
+        Settings.citaj_meno = not Settings.citaj_meno
         cls()
     else:
         cls()
@@ -203,11 +209,11 @@ q -> exit()
 def set_users():
     cls()
     global jazyk, mena, whitelist
-    if len(mena) == 0:
+    if len(Settings.mena) == 0:
         i_mena = "všetci"
     else:
-        i_mena = mena
-    if (whitelist):
+        i_mena = Settings.mena
+    if (Settings.whitelist):
         i_wlist = "[WHITELIST] /  BLACKLIST "
     else:
         i_wlist = " WHITELIST  / [BLACKLIST]"
@@ -227,22 +233,22 @@ def set_users():
             pass
         
         if command == "add":
-            if name in mena: 
+            if name in Settings.mena: 
                 print("!> Meno sa už v zozname nachádza.")
             else:
-                mena.append(name)
+                Settings.mena.append(name)
                 break
         elif command == "del":
-            if name in mena: 
-                del mena [mena.index(name)]
+            if name in Settings.mena: 
+                del Settings.mena [Settings.mena.index(name)]
                 break
             else:
                 print ("!> Meno sa v zozname nenachádza.")
         elif command == "clear":
-            mena = []
+            Settings.mena = []
             break
         elif command == "wb":
-            whitelist = not whitelist
+            Settings.whitelist = not Settings.whitelist
             cls()
             break
         elif command == "exit":
@@ -268,12 +274,12 @@ def id_to_name(idecko):
 
 
 def read(name, text):
-    if citaj_meno:
+    if Settings.citaj_meno:
         toread = name + " píše: " + text
     else:
         toread = text
     print ("Reading: " + name + " píše: " + text)
-    uurrll = "\"http://translate.google.com/translate_tts?tl="+jazyk+"&q="+toread+"&ie=UTF8\""
+    uurrll = "\"http://translate.google.com/translate_tts?tl="+Settings.jazyk+"&q="+toread+"&ie=UTF8\""
     if os.name=="nt":
         subprocess.call(player()+uurrll, startupinfo=startupinfo)
     else:
@@ -290,10 +296,10 @@ def message(msg):
         idecko = froms[froms.find("-")+1:froms.find("@")]
         name = id_to_name(idecko)
         
-        if len(mena) == 0:
+        if len(Settings.mena) == 0:
             read (name, rmsg)
         else:
-            if (name in mena) == whitelist:
+            if (name in Settings.mena) == Settings.whitelist:
                 read (name, rmsg)
             else:
                 print(name + " píše: " + rmsg)
