@@ -1,2 +1,0 @@
-python ttsfb.py
-pause
