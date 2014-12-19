@@ -95,6 +95,33 @@ mena = []
 citaj_meno = True
 whitelist = True
 
+class Loading:
+    """Loading"""
+    from time import sleep
+    loading_state = True
+    def start():
+        threading.Thread(target=Loading.loading).start()
+
+    def loading(loanim = ["|", "/", "-", "\\"], speed = 0.1):
+        a = 0
+        print()
+        while Loading.loading_state:
+            print("\u001B[2A\u001B[1C")
+            print (loanim[a])
+            a = a + 1
+            if a >= len(loanim):
+                a = 0
+            Loading.sleep(speed)
+        Loading.loading_state = True
+    
+    
+    def stop():
+        Loading.loading_state = False
+        while Loading.loading_state == False:
+            pass
+        print("\u001B[2A\u001B[1C")
+
+
 def cls():
     if os.name == "nt":
         x("cls")
@@ -103,8 +130,9 @@ def cls():
 
 def session_start(event):
     fbtts.send_presence()
+    Loading.stop()
     print("Connected.")
-	#read("Fejsbúk","Pripojené")
+    #read("Fejsbúk","Pripojené")
     fbtts.get_roster()
 
 
@@ -317,6 +345,7 @@ def main():
     server = ("chat.facebook.com", 5222)
 
     print ("Connecting... (môže trvať niekľko minút)")
+    Loading.start()
     threading.Thread(target=kvit).start()
     
     global fbtts
