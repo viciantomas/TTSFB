@@ -90,11 +90,6 @@ else:
 
 
 #### APP
-jazyk = "sk"
-mena = []
-citaj_meno = True
-whitelist = True
-
 class Settings:
     jazyk = "sk"
     mena = []
@@ -156,7 +151,6 @@ def startup_q():
 def menu():
     cls()
     
-    global jazyk, mena, citaj_meno
     if len(Settings.mena) == 0:
         i_mena = "všetci"
     else:
@@ -208,7 +202,6 @@ q -> exit()
 
 def set_users():
     cls()
-    global jazyk, mena, whitelist
     if len(Settings.mena) == 0:
         i_mena = "všetci"
     else:
@@ -333,7 +326,6 @@ def check_username(usrn):
 
 
 def get_info():
-    #global jid, password
     jid = input("Username: ")
     while not check_username(jid):
         print ("Zadajte správne prihlasovacie meno.")
