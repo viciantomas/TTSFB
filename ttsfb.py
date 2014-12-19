@@ -28,56 +28,35 @@ startupinfo = None
 #import logging    
 #logging.basicConfig(level=logging.ERROR)
 
-
-#### check SleekXMPP
-"""
-while True:
-    try:
-        from sleekxmpp import ClientXMPP
-        break
-    except ImportError:
-        print ("Nemáš knižnicu SleekXMPP. Chceš ju nainštalovať?")
-        volba = input ("Y/n: ")
-        if volba in ["Y", "y", '']:
-            if os.name == "nt":
-                x("cd lib/SleekXMPP-1.3.1/ && python setup.py install")
-            else:
-                x("cd lib/SleekXMPP-1.3.1/ && sudo python3 setup.py install")
-            print ("Môžeš skúsiť znova spustiť aplikáciu")
-            exit ()
-        else:
-            print ("Nieje možné importovať knižnicu SleekXMPP.")
-            exit ()"""
 sys.path.append("./lib")
 from sleekxmpp import ClientXMPP
 
-#### check mplayer
 if os.name == "nt":
     startupinfo = subprocess.STARTUPINFO()
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     
-    cesta = 'C:/Program Files (x86)/VideoLAN/VLC/vlc.exe'
-    print(os.path.isfile(cesta))
-    if (os.path.isfile(cesta)):
-        #print ("(64bit)")
+    road = 'C:/Program Files (x86)/VideoLAN/VLC/vlc.exe'
+    print(os.path.isfile(road))
+    if (os.path.isfile(road)):
         pass
     else:
-        cesta = 'C:/Program Files/VideoLAN/VLC/vlc.exe'
-        if (os.path.isfile(cesta)):
-            #print ("(x86)")
+        road = 'C:/Program Files/VideoLAN/VLC/vlc.exe'
+        if (os.path.isfile(road)):
             pass
         else:
-            print ("Aplikácia pre prehrávanie zvuku potrebuje VLC Media Player. V základných umiestneniah sa nenachádza. Správy nebudú prečítané nahlas.")
-    def player():
-        return "\""+cesta + "\" --play-and-exit --intf dummy "
+            print ("Aplikácia pre prehrávanie zvuku potrebuje VLC Media \
+Player. V základných umiestneniah sa nenachádza. Správy \
+nebudú prečítané nahlas.")
     
-    #exit()
+    def player():
+        return "\"" + road + "\" --play-and-exit --intf dummy "
+
 else:
     while True:
         try:
             subprocess.call("mplayer", stdout=subprocess.PIPE)
             def player():
-                return "mplayer -ao alsa -really-quiet -noconsolecontrols -nolirc "
+                return "mplayer -really-quiet -noconsolecontrols -nolirc "
             break
         except OSError:
             if os.path.isfile("/usr/bin/vlc"):
@@ -85,15 +64,17 @@ else:
                     return "vlc --play-and-exit --intf dummy "
                 break
             else:
-                print ("Pre používanie je potrebné mať nainštalovaný mplayer alebo VLC media player.\nProsím, doinštalujte ho a pokračujte stlačením klávesy Enter.")
+                print ("Pre používanie je potrebné mať nainštalovaný \
+mplayer alebo VLC media player.\n\
+Prosím, doinštalujte ho a pokračujte stlačením klávesy Enter.")
                 input ()
 
 
 #### APP
 class Settings:
-    jazyk = "sk"
-    mena = []
-    citaj_meno = True
+    lang = "sk"
+    names = []
+    read_name = True
     whitelist = True
 
 class Loading:
@@ -138,7 +119,9 @@ def session_start(event):
 
 
 def startup_q():
-    print ("Prajete si spustiť program so základnými nastaveniami?\n(v slovenskom jazyku číta správy od všetkých používateľov.\nKu menu sa dá počas spojenia prisúpiť zadaním príkazu menu)")
+    print ("Prajete si spustiť program so základnými nastaveniami?\n\
+(v slovenskom jazyku číta správy od všetkých používateľov.\n\
+Ku menu sa dá počas spojenia prisúpiť zadaním príkazu menu)")
     volba = input ("Y/n: ")
     if volba in ["Y", "y", '']:
         return
@@ -151,10 +134,10 @@ def startup_q():
 def menu():
     cls()
     
-    if len(Settings.mena) == 0:
-        i_mena = "všetci"
+    if len(Settings.names) == 0:
+        i_names = "všetci"
     else:
-        i_mena = len(Settings.mena)
+        i_names = len(Settings.names)
     
     print ("""Menu:
 1 -> Nastavenie jazyka (nastavený: {0})
@@ -164,7 +147,7 @@ def menu():
 0 -> Spustiť
 
 q -> exit()
-""".format(Settings.jazyk, i_mena, Settings.citaj_meno))
+""".format(Settings.lang, i_names, Settings.read_name))
     
     volba = input("Zdajte číslo: ")
     
@@ -184,13 +167,14 @@ q -> exit()
     if volba == 0:
         return
     if volba == 1:
-        Settings.jazyk = input("Zadajte kódové označenie jazyka (napr. sk, en, de): ")
+        Settings.lang = input("Zadajte kódové označenie jazyka \
+(napr. sk, en, de): ")
         cls()
     elif volba == 2:
         cls()
         set_users()
     elif volba == 3:
-        Settings.citaj_meno = not Settings.citaj_meno
+        Settings.read_name = not Settings.read_name
         cls()
     else:
         cls()
@@ -202,16 +186,16 @@ q -> exit()
 
 def set_users():
     cls()
-    if len(Settings.mena) == 0:
-        i_mena = "všetci"
+    if len(Settings.names) == 0:
+        i_names = "všetci"
     else:
-        i_mena = Settings.mena
+        i_names = Settings.names
     if (Settings.whitelist):
         i_wlist = "[WHITELIST] /  BLACKLIST "
     else:
         i_wlist = " WHITELIST  / [BLACKLIST]"
     
-    print ("!> Momentálne sledovaní užívatelia:\n    ", i_mena)
+    print ("!> Momentálne sledovaní užívatelia:\n    ", i_names)
     print ("""!> Dostupné príkazy: 
     add [užívateľ] (pridá užívateľa) 
     del [užívateľ] (zmaže užívateľa)
@@ -226,19 +210,19 @@ def set_users():
             pass
         
         if command == "add":
-            if name in Settings.mena: 
+            if name in Settings.names: 
                 print("!> Meno sa už v zozname nachádza.")
             else:
-                Settings.mena.append(name)
+                Settings.names.append(name)
                 break
         elif command == "del":
-            if name in Settings.mena: 
-                del Settings.mena [Settings.mena.index(name)]
+            if name in Settings.names: 
+                del Settings.names [Settings.names.index(name)]
                 break
             else:
                 print ("!> Meno sa v zozname nenachádza.")
         elif command == "clear":
-            Settings.mena = []
+            Settings.names = []
             break
         elif command == "wb":
             Settings.whitelist = not Settings.whitelist
@@ -267,12 +251,13 @@ def id_to_name(idecko):
 
 
 def read(name, text):
-    if Settings.citaj_meno:
+    if Settings.read_name:
         toread = name + " píše: " + text
     else:
         toread = text
     print ("Reading: " + name + " píše: " + text)
-    uurrll = "\"http://translate.google.com/translate_tts?tl="+Settings.jazyk+"&q="+toread+"&ie=UTF8\""
+    uurrll = "\"http://translate.google.com/translate_tts?tl="+Settings.lang+"\
+&q="+toread+"&ie=UTF8\""
     if os.name=="nt":
         subprocess.call(player()+uurrll, startupinfo=startupinfo)
     else:
@@ -281,22 +266,18 @@ def read(name, text):
 def message(msg):
     if msg["type"] in ("chat","normal"):
         rmsg = msg["body"]
-        #if rmsg == "exitni":
-        #    exit()
-        #print (msg)
         
         froms = str(msg["from"])
         idecko = froms[froms.find("-")+1:froms.find("@")]
         name = id_to_name(idecko)
         
-        if len(Settings.mena) == 0:
+        if len(Settings.names) == 0:
             read (name, rmsg)
         else:
-            if (name in Settings.mena) == Settings.whitelist:
+            if (name in Settings.names) == Settings.whitelist:
                 read (name, rmsg)
             else:
                 print(name + " píše: " + rmsg)
-        #msg.reply('Thanks').send()
 
 
 def kvit():
@@ -306,22 +287,25 @@ def kvit():
         os._exit(1)
     elif inpul == "menu":
         menu()
-	#elif inpul sem dame ak napise bodku a medzeru tak..
     kvit()
 
 
 
 def check_username(usrn):
+    Loading.start()
     url = "http://graph.facebook.com/" + usrn
     try:
         raw_data = urllib.request.urlopen(url).read()
         data = json.loads(raw_data.decode("utf8"))
         try:
             data["error"]
+            Loading.stop()
             return False
         except:
+            Loading.stop()
             return True
     except:
+        Loading.stop()
         return False
 
 
