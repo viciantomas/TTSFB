@@ -77,10 +77,12 @@ class Settings:
     read_name = True
     whitelist = True
 
+
 class Loading:
     """Loading"""
     from time import sleep
     loading_state = True
+    
     def start():
         threading.Thread(target=Loading.loading).start()
 
@@ -95,8 +97,7 @@ class Loading:
                 a = 0
             Loading.sleep(speed)
         Loading.loading_state = True
-    
-    
+        
     def stop():
         Loading.loading_state = False
         while Loading.loading_state == False:
@@ -110,11 +111,11 @@ def cls():
     else:
         x("clear")
 
+
 def session_start(event):
     fbtts.send_presence()
     Loading.stop()
-    print("Connected.")
-    #read("Fejsbúk","Pripojené")
+    print("Pripojené..")
     fbtts.get_roster()
 
 
@@ -127,8 +128,6 @@ Ku menu sa dá počas spojenia prisúpiť zadaním príkazu menu)")
         return
     else:
         menu()
-
-
 
 
 def menu():
@@ -183,7 +182,6 @@ q -> exit()
     menu()
 
 
-
 def set_users():
     cls()
     if len(Settings.names) == 0:
@@ -192,10 +190,12 @@ def set_users():
         i_names = Settings.names
     if (Settings.whitelist):
         i_wlist = "[WHITELIST] /  BLACKLIST "
+        i_wlstw = "sledovaní"
     else:
         i_wlist = " WHITELIST  / [BLACKLIST]"
+        i_wlstw = "nesledovaní"
     
-    print ("!> Momentálne sledovaní užívatelia:\n    ", i_names)
+    print ("!> Momentálne {0} užívatelia:\n    {1}".format(i_wlstw, i_names))
     print ("""!> Dostupné príkazy: 
     add [užívateľ] (pridá užívateľa) 
     del [užívateľ] (zmaže užívateľa)
@@ -240,8 +240,6 @@ def set_users():
     set_users()
 
 
-
-
 def id_to_name(idecko):
     url = "http://graph.facebook.com/" + idecko
     raw_data = urllib.request.urlopen(url).read()
@@ -255,13 +253,14 @@ def read(name, text):
         toread = name + " píše: " + text
     else:
         toread = text
-    print ("Reading: " + name + " píše: " + text)
+    print ("Čítam: " + name + " píše: " + text)
     uurrll = "\"http://translate.google.com/translate_tts?tl="+Settings.lang+"\
 &q="+toread+"&ie=UTF8\""
     if os.name=="nt":
         subprocess.call(player()+uurrll, startupinfo=startupinfo)
     else:
         x(player()+uurrll+" &> /dev/null")
+
 
 def message(msg):
     if msg["type"] in ("chat","normal"):
@@ -288,7 +287,6 @@ def kvit():
     elif inpul == "menu":
         menu()
     kvit()
-
 
 
 def check_username(usrn):
@@ -319,14 +317,13 @@ def get_info():
     return jid, password
 
 
-
 def main():
     startup_q()
     
     jid,password = get_info()
     server = ("chat.facebook.com", 5222)
 
-    print ("Connecting... (môže trvať niekľko minút)")
+    print ("Pripájanie... (môže trvať niekľko minút)")
     Loading.start()
     threading.Thread(target=kvit).start()
     
@@ -337,6 +334,7 @@ def main():
     fbtts.auto_reconnect = True
     fbtts.connect(server)
     fbtts.process(block=True)
+
 
 if __name__ == "__main__":
     main()
