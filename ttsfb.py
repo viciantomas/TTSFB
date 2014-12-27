@@ -154,7 +154,7 @@ q -> exit()
     elif choice in ("q", "exit"):
         os._exit(1)
     try:
-        choice = int(volba)
+        choice = int(choice)
     except:
         cls()
         print("Error! Not a valid choice.")
