@@ -1,3 +1,5 @@
+lines = 3
+speed = 0.08
 def genAnim():
     moves=[
 """
