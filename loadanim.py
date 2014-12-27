@@ -1,5 +1,6 @@
 lines = 3
 speed = 0.08
+width = 41
 def genAnim():
     moves=[
 """
@@ -37,13 +38,15 @@ _
 ]
     m=0
     result=[]
-    for i in range(0,41):
+    steps=0
+    for i in range(0,8*20+1):
         spaceFirst= ""
         spaceLast= ""
-        
-        for j in range(0, i):
+        if m==4:
+            steps=steps+2
+        for j in range(0, steps):
             spaceFirst+= " "
-        for j in range(0, 41-i):
+        for j in range(0, 41-steps):
             spaceLast+=  " "
         result += [moves[m]]
         result[i]=result[i].replace("\n","\n"+spaceFirst)
