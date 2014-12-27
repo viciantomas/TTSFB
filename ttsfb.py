@@ -82,14 +82,25 @@ class Loading:
     from time import sleep
     loading_state = True
     
+    try:
+        import loadanim
+        loadingAnimation = loadanim.genAnim()
+        lines = loadanim.lines + 2
+        speeded = loadanim.speed
+    except:
+        loadingAnimation = ["|", "/", "-", "\\"]
+        lines = 1
+        speeded = 0.1
+
     def start():
         threading.Thread(target=Loading.loading).start()
 
-    def loading(loanim = ["|", "/", "-", "\\"], speed = 0.1):
+    def loading(loanim = loadingAnimation, speed = speeded):
         a = 0
-        print()
+        for i in range(1, Loading.lines):
+            print()
         while Loading.loading_state:
-            print("\u001B[2A\u001B[1C")
+            print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
             print (loanim[a])
             a = a + 1
             if a >= len(loanim):
