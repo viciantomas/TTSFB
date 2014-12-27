@@ -44,7 +44,8 @@ if os.name == "nt":
         if (os.path.isfile(road)):
             pass
         else:
-            print ("Application require VLC Media Player. Messages will not be readed.")
+            print ("Application require VLC Media Player. \
+Messages will not be readed.")
     
     def player():
         return "\"" + road + "\" --play-and-exit --intf dummy "
@@ -163,7 +164,7 @@ q -> exit()
     if choice == 0:
         return
     if choice == 1:
-        Settings.lang = input("Type language code (for example. sk, en, de): ")
+        Settings.lang = input("Type language code (example: sk, en, de): ")
         cls()
     elif choice == 2:
         cls()
