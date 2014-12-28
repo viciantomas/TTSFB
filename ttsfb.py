@@ -36,7 +36,6 @@ if os.name == "nt":
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     
     road = 'C:/Program Files (x86)/VideoLAN/VLC/vlc.exe'
-    print(os.path.isfile(road))
     if (os.path.isfile(road)):
         pass
     else:
@@ -102,9 +101,10 @@ class Loading:
         for i in range(1, Loading.lines):
             print()
         while Loading.loading_state:
-            print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
             if os.name == "nt":
                 cls()
+            else:
+                print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
             print(loanim[a])
             a = a + 1
             if a >= len(loanim):
@@ -116,12 +116,14 @@ class Loading:
         Loading.loading_state = False
         while Loading.loading_state == False:
             pass
-        print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
-        for i in range(1, Loading.lines):
-            print(" " * Loading.width)
-        print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
         if os.name == "nt":
             cls()
+        else:
+            print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
+            for i in range(1, Loading.lines):
+                print(" " * Loading.width)
+            print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
+
 
 
 def cls():
