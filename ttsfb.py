@@ -87,10 +87,12 @@ class Loading:
         loadingAnimation = loadanim.genAnim()
         lines = loadanim.lines + 2
         speeded = loadanim.speed
+        width = loadanim.width
     except:
         loadingAnimation = ["|", "/", "-", "\\"]
-        lines = 1
+        lines = 0+2
         speeded = 0.1
+        width = 1
 
     def start():
         threading.Thread(target=Loading.loading).start()
@@ -101,7 +103,9 @@ class Loading:
             print()
         while Loading.loading_state:
             print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
-            print (loanim[a])
+            if os.name == "nt":
+                cls()
+            print(loanim[a])
             a = a + 1
             if a >= len(loanim):
                 a = 0
@@ -112,7 +116,12 @@ class Loading:
         Loading.loading_state = False
         while Loading.loading_state == False:
             pass
-        print("\u001B[2A\u001B[1C")
+        print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
+        for i in range(1, Loading.lines):
+            print(" " * Loading.width)
+        print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
+        if os.name == "nt":
+            cls()
 
 
 def cls():
