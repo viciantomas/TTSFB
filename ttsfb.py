@@ -80,7 +80,8 @@ class Loading:
     """Loading"""
     from time import sleep
     loading_state = True
-    
+    text = None
+
     try:
         import loadanim
         loadingAnimation = loadanim.genAnim()
@@ -89,7 +90,7 @@ class Loading:
         width = loadanim.width
     except:
         loadingAnimation = ["|", "/", "-", "\\"]
-        lines = 0+2
+        lines = 0 + 2
         speeded = 0.1
         width = 1
 
@@ -98,13 +99,18 @@ class Loading:
 
     def loading(loanim = loadingAnimation, speed = speeded):
         a = 0
-        for i in range(1, Loading.lines):
-            print()
+        if not (Loading.text == None):
+            Loading.lines = Loading.lines + 1
+        if not (os.name == "nt"):
+            for i in range(1, Loading.lines):
+                print()
         while Loading.loading_state:
             if os.name == "nt":
                 cls()
             else:
                 print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
+            if not (Loading.text == None):
+                print (Loading.text)
             print(loanim[a])
             a = a + 1
             if a >= len(loanim):
@@ -124,6 +130,9 @@ class Loading:
                 print(" " * Loading.width)
             print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
 
+
+if os.name == "nt":
+    Loading.text = "Loading..."
 
 
 def cls():
