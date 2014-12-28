@@ -5,3 +5,5 @@ lang
 delenie sprav po znakoch 100	
 	Najskor konvertuj do url kodu 
 	a potom rozdel pomocou %20 ktore hladaj po znakoh s5
+id+name database
+onetime nickname check, may by in config file
