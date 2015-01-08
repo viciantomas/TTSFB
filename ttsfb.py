@@ -339,7 +339,7 @@ def kwit():
         print ("Exiting...")
         os._exit(1)
     elif inpul == "menu":
-        Loading.stop()
+        #Loading.stop()
         menu()
     kwit()
 
