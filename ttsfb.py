@@ -23,6 +23,7 @@ import json
 import urllib.request
 import os
 import threading
+import urllib.parse
 from os import system as x
 startupinfo = None
 #import logging    
@@ -74,6 +75,10 @@ class Settings:
     names = []
     read_name = True
     whitelist = True
+
+
+class Dynamic:
+    read_running = False
 
 
 class Loading:
@@ -172,7 +177,7 @@ def menu():
 2 -> Userlist settings (count: {1})
 3 -> Read name: {2}
 
-0 -> Run
+
 
 q -> exit()
 """.format(Settings.lang, i_names, Settings.read_name))
@@ -277,17 +282,38 @@ def id_to_name(iddie):
 
 
 def read(name, text):
+    while Dynamic.read_running:
+        pass
+    Dynamic.read_running = True
     if Settings.read_name:
         toread = name + " wrote: " + text
     else:
         toread = text
-    print ("Reading: " + name + " wrote: " + text)
+
+    toread = urllib.parse.quote(toread)
+    while True:
+        toread_now = toread[:toread[:160].rfind("%20")]
+        toread = toread[toread[:160].rfind("%20"):]
+        if toread_now == "":
+            toread_now = toread
+        print ("Reading: " + urllib.parse.unquote(toread_now))
+        uurrll = "\"http://translate.google.com/translate_tts?tl="+Settings.lang+"\
+&q="+toread_now+"&ie=UTF8\""
+        if os.name=="nt":
+            subprocess.call(player()+uurrll, startupinfo=startupinfo)
+        else:
+            x(player()+uurrll+" &> /dev/null")
+        if toread == toread_now:
+            break
+
+    """print ("Reading: " + urllib.parse.unquote(toread))
     uurrll = "\"http://translate.google.com/translate_tts?tl="+Settings.lang+"\
 &q="+toread+"&ie=UTF8\""
     if os.name=="nt":
         subprocess.call(player()+uurrll, startupinfo=startupinfo)
     else:
-        x(player()+uurrll+" &> /dev/null")
+        x(player()+uurrll+" &> /dev/null")"""
+    Dynamic.read_running = False
 
 
 def message(msg):
@@ -309,10 +335,11 @@ def message(msg):
 
 def kwit():
     inpul = input()
-    if inpul == "exit":
-        print ("Exitting...")
+    if (inpul == "exit") or (inpul == "quit"):
+        print ("Exiting...")
         os._exit(1)
     elif inpul == "menu":
+        Loading.stop()
         menu()
     kwit()
 
@@ -328,7 +355,8 @@ def check_username(usrn):
             Loading.stop()
             return False
         except:
-            Loading.stop()
+            if Loading.loading_state:
+                Loading.stop()
             return True
     except:
         Loading.stop()
