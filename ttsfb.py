@@ -109,6 +109,7 @@ class Loading:
         if not (os.name == "nt"):
             for i in range(1, Loading.lines):
                 print()
+        Loading.loading_state = True
         while Loading.loading_state:
             if os.name == "nt":
                 cls()
@@ -124,16 +125,18 @@ class Loading:
         Loading.loading_state = True
         
     def stop():
-        Loading.loading_state = False
-        while Loading.loading_state == False:
-            pass
-        if os.name == "nt":
-            cls()
-        else:
-            print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
-            for i in range(1, Loading.lines):
-                print(" " * Loading.width)
-            print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
+        if Loading.loading_state:
+            Loading.loading_state = False
+            while Loading.loading_state == False:
+                pass
+            if os.name == "nt":
+                cls()
+            else:
+                print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
+                for i in range(1, Loading.lines):
+                    print(" " * Loading.width)
+                print("\u001B[" + str(Loading.lines) + "A\u001B[1C")
+            Loading.loading_state = False
 
 
 if os.name == "nt":
@@ -244,7 +247,7 @@ def set_users():
         
         if command == "add":
             if name in Settings.names: 
-                print("!> The user is already in list")
+                print("!> The user is already in the list")
             else:
                 Settings.names.append(name)
                 break
@@ -253,7 +256,7 @@ def set_users():
                 del Settings.names [Settings.names.index(name)]
                 break
             else:
-                print ("!> This user not on the list.")
+                print ("!> The user is not in the list.")
         elif command == "clear":
             Settings.names = []
             break
@@ -339,7 +342,7 @@ def kwit():
         print ("Exiting...")
         os._exit(1)
     elif inpul == "menu":
-        #Loading.stop()
+        Loading.stop()
         menu()
     kwit()
 
@@ -355,8 +358,7 @@ def check_username(usrn):
             Loading.stop()
             return False
         except:
-            if Loading.loading_state:
-                Loading.stop()
+            Loading.stop()
             return True
     except:
         Loading.stop()
