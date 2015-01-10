@@ -295,13 +295,16 @@ def read(name, text):
 
     toread = urllib.parse.quote(toread)
     while True:
-        toread_now = toread[:toread[:160].rfind("%20")]
-        toread = toread[toread[:160].rfind("%20"):]
+        if len(toread) > 160:
+            toread_now = toread[:toread[:160].rfind("%20")]
+            toread = toread[toread[:160].rfind("%20"):]
+        else:
+            toread_now = toread
         if toread_now == "":
             toread_now = toread
         print ("Reading: " + urllib.parse.unquote(toread_now))
-        uurrll = "\"http://translate.google.com/translate_tts?tl="+Settings.lang+"\
-&q="+toread_now+"&ie=UTF8\""
+        uurrll = "\"http://translate.google.com/translate_tts?tl=\
+"+Settings.lang+"&q="+toread_now+"&ie=UTF8\""
         if os.name=="nt":
             subprocess.call(player()+uurrll, startupinfo=startupinfo)
         else:
