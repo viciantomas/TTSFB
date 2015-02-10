@@ -77,6 +77,44 @@ class Settings:
     whitelist = True
 
 
+class Config: # UNDER CONSTRUCTION
+    import configparser
+    file = "config.ini"
+    config = configparser.ConfigParser()
+    config["SETTINGS"] = {"lang": "en", "read_name": "True", "whitelist": "True"}
+    config["NAMES"] = {}
+    
+    class File:
+        def read(file):
+            with open(file, 'r') as f:
+                Config.config.read(f)
+        def write(file):
+            with open(file, 'w') as f:
+                Config.config.write(f)
+    
+    def rd(variable, category="SETTINGS"):
+        if variable != "":
+            data = Config.config[category][variable]
+        else:
+            data = Config.config[category]
+        
+        if data in ("True", "False"):
+            if data == "True":
+                data = True
+            else: 
+                data = False
+        return data
+    
+    def wt(variable, data, category="SETTINGS"):
+        if data != "":
+            data = str(data)
+            Config.config[category][variable] = data
+        else:
+            Config.config[category] = variable
+        
+    def save():
+        Config.File.write(Config.file)
+
 class Dynamic:
     read_running = False
 
@@ -170,28 +208,29 @@ def startup_q():
 def menu():
     cls()
     
-    if len(Settings.names) == 0:
+    if len(list(Config.rd("", "NAMES").keys())) == 0:
         i_names = "all"
     else:
-        i_names = len(Settings.names)
+        i_names = len(list(Config.rd("", "NAMES").keys()))
     
     print ("""Menu:
 1 -> Set language (set: {0})
 2 -> Userlist settings (count: {1})
-3 -> Read name: {2}
-
-
-
+3 -> Read name: {2}\n\n
+s -> Save settings as default
 q -> exit()
-""".format(Settings.lang, i_names, Settings.read_name))
+""".format(Config.rd("lang"), i_names, Config.rd("read_name")))
     
-    choice = input("Enter your choice: ")
+    choice = input ("Enter your choice: ")
     
     if choice == "":
         cls()
         return
     elif choice in ("q", "exit"):
         os._exit(1)
+    elif choice == "s":
+        Config.save()
+
     try:
         choice = int(choice)
     except:
@@ -203,13 +242,13 @@ q -> exit()
     if choice == 0:
         return
     if choice == 1:
-        Settings.lang = input("Type language code (example: sk, en, de): ")
+        Config.wt("lang", input("Type language code (example: sk, en, de): "))
         cls()
     elif choice == 2:
         cls()
         set_users()
     elif choice == 3:
-        Settings.read_name = not Settings.read_name
+        Config.wt("read_name", not Config.rd("read_name"))
         cls()
     else:
         cls()
@@ -220,11 +259,11 @@ q -> exit()
 
 def set_users():
     cls()
-    if len(Settings.names) == 0:
+    if len(list(Config.rd("", "NAMES").keys())) == 0:
         i_names = "all"
     else:
-        i_names = Settings.names
-    if (Settings.whitelist):
+        i_names = list(Config.rd("", "NAMES").keys())
+    if (Config.rd("whitelist")):
         i_wlist = "[WHITELIST] /  BLACKLIST "
         i_wlstw = "read"
     else:
@@ -246,22 +285,30 @@ def set_users():
             pass
         
         if command == "add":
-            if name in Settings.names: 
+            if name in list(Config.rd("", "NAMES").keys()): 
                 print("!> The user is already in the list")
             else:
-                Settings.names.append(name)
+                tmp = list(Config.rd("", "NAMES").keys())
+                tmp.append(name)
+                dictt = {}
+                Config.wt(dictt.fromkeys(tmp, ""), "", "NAMES")
                 break
         elif command == "del":
-            if name in Settings.names: 
-                del Settings.names [Settings.names.index(name)]
+            if name in list(Config.rd("", "NAMES").keys()): 
+                tmp = list(Config.rd("", "NAMES").keys())
+                del tmp [tmp.index(name)]
+                dictt = {}
+                Config.wt(dictt.fromkeys(tmp, ""), "", "NAMES")
                 break
             else:
                 print ("!> The user is not in the list.")
         elif command == "clear":
-            Settings.names = []
+            tmp = list(Config.rd("", "NAMES").keys())
+            tmp = {}
+            Config.wt(tmp, "", "NAMES")
             break
         elif command == "wb":
-            Settings.whitelist = not Settings.whitelist
+            Config.wt("whitelist", not Config.rd("whitelist"))
             cls()
             break
         elif command == "exit":
@@ -288,7 +335,7 @@ def read(name, text):
     while Dynamic.read_running:
         pass
     Dynamic.read_running = True
-    if Settings.read_name:
+    if Config.rd("read_name"):
         toread = name + " wrote: " + text
     else:
         toread = text
@@ -304,7 +351,7 @@ def read(name, text):
             toread_now = toread
         print ("Reading: " + urllib.parse.unquote(toread_now))
         uurrll = "\"http://translate.google.com/translate_tts?tl=\
-"+Settings.lang+"&q="+toread_now+"&ie=UTF8\""
+"+Config.rd("lang")+"&q="+toread_now+"&ie=UTF8\""
         if os.name=="nt":
             subprocess.call(player()+uurrll, startupinfo=startupinfo)
         else:
@@ -312,13 +359,6 @@ def read(name, text):
         if toread == toread_now:
             break
 
-    """print ("Reading: " + urllib.parse.unquote(toread))
-    uurrll = "\"http://translate.google.com/translate_tts?tl="+Settings.lang+"\
-&q="+toread+"&ie=UTF8\""
-    if os.name=="nt":
-        subprocess.call(player()+uurrll, startupinfo=startupinfo)
-    else:
-        x(player()+uurrll+" &> /dev/null")"""
     Dynamic.read_running = False
 
 
@@ -330,10 +370,10 @@ def message(msg):
         idecko = froms[froms.find("-")+1:froms.find("@")]
         name = id_to_name(idecko)
         
-        if len(Settings.names) == 0:
+        if len(list(Config.rd("", "NAMES").keys())) == 0:
             read (name, rmsg)
         else:
-            if (name in Settings.names) == Settings.whitelist:
+            if (name in list(Config.rd("", "NAMES").keys())) == Config.rd("whitelist"):
                 read (name, rmsg)
             else:
                 print(name + " wrote: " + rmsg)
