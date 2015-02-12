@@ -32,6 +32,17 @@ startupinfo = None
 sys.path.append("./lib")
 from sleekxmpp import ClientXMPP
 
+try:
+    urllib.request.urlopen("http://62.168.125.40/", timeout=10)
+    pass
+except urllib.request.URLError:
+    print ("Internet connection does not exist.")
+    volba = input()
+    if volba == "continue":
+        pass
+    else:
+        os._exit(1)
+
 if os.name == "nt":
     startupinfo = subprocess.STARTUPINFO()
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
@@ -74,8 +85,25 @@ class Config: # UNDER CONSTRUCTION
     import configparser
     file = "config.ini"
     config = configparser.ConfigParser()
-    config["SETTINGS"] = {"lang": "en", "read_name": "True", "whitelist": "True"}
-    config["NAMES"] = {}
+    if (os.path.isfile(file)):
+        config_exists = True
+        print ("Config file with saved settings found.\n\
+Do you want to load theese settings? If not, application will load \
+default settings\n\
+(You can access menu by typing menu while application is running)")
+        volba = input ("Y/n: ")
+        if volba in ["Y", "y", '']:
+            config.read(file)
+        else:
+            config["SETTINGS"] = {"lang": "en", "read_name": "True",
+            "whitelist": "True"}
+            config["NAMES"] = {}
+            config_exists = "true" #menu()
+    else:
+        config_exists = False
+        config["SETTINGS"] = {"lang": "en", "read_name": "True",
+        "whitelist": "True"}
+        config["NAMES"] = {}
     
     class File:
         def read(file):
@@ -189,12 +217,15 @@ def session_start(event):
 
 
 def startup_q():
-    print ("Do you want to launch application with default settings?\n\
+    if Config.config_exists == False:
+        print ("Do you want to launch application with default settings?\n\
 (You can access menu by typing menu while application is running)")
-    volba = input ("Y/n: ")
-    if volba in ["Y", "y", '']:
-        return
-    else:
+        volba = input ("Y/n: ")
+        if volba in ["Y", "y", '']:
+            return
+        else:
+            menu()
+    elif Config.config_exists == "true": 
         menu()
 
 
