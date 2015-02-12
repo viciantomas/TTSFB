@@ -2,3 +2,4 @@ aliases
 lang - wrote -> píše atp... :D
 id+name database
 onetime nickname check, may by in config file
+option - after once name been said, do not repeat until change
