@@ -70,13 +70,6 @@ Please install it and continue by press Enter.")
 
 
 #### APP
-class Settings:
-    lang = "en"
-    names = []
-    read_name = True
-    whitelist = True
-
-
 class Config: # UNDER CONSTRUCTION
     import configparser
     file = "config.ini"
@@ -373,7 +366,7 @@ def message(msg):
         if len(list(Config.rd("", "NAMES").keys())) == 0:
             read (name, rmsg)
         else:
-            if (name in list(Config.rd("", "NAMES").keys())) == Config.rd("whitelist"):
+            if (name.lower() in list(Config.rd("", "NAMES").keys())) == Config.rd("whitelist"):
                 read (name, rmsg)
             else:
                 print(name + " wrote: " + rmsg)
