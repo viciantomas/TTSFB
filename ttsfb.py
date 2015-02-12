@@ -96,13 +96,13 @@ default settings\n\
             config.read(file)
         else:
             config["SETTINGS"] = {"lang": "en", "read_name": "True",
-            "whitelist": "True"}
+            "whitelist": "True", "user": ""}
             config["NAMES"] = {}
             config_exists = "true" #menu()
     else:
         config_exists = False
         config["SETTINGS"] = {"lang": "en", "read_name": "True",
-        "whitelist": "True"}
+        "whitelist": "True", "user": ""}
         config["NAMES"] = {}
     
     class File:
@@ -415,6 +415,8 @@ def kwit():
 
 
 def check_username(usrn):
+    if Config.rd("user") == usrn:
+        return True
     Loading.start()
     url = "http://graph.facebook.com/" + usrn
     try:
@@ -426,6 +428,7 @@ def check_username(usrn):
             return False
         except:
             Loading.stop()
+            Config.wt("user", usrn)
             return True
     except:
         Loading.stop()
